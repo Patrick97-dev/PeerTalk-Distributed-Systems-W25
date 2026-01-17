@@ -201,8 +201,6 @@ class PeerNode:
     
     def start_election(self, reason=""):
         with self.election_lock:
-            if self.election_in_progress:
-                return
             self.election_in_progress = True
 
         succ = self._successor_addr()
@@ -214,11 +212,15 @@ class PeerNode:
             return
 
         safe_print(f"\n[SYSTEM] Election start ({reason}) | my_id={self.node_id} -> successor {self._successor_id()}")
-        # ELECTION message format: ELECTION|origin_id|candidate_id
-        # origin_id: who started the election (to detect completion)
-        # candidate_id: current highest ID seen (starts as originator's ID)
         msg = f"ELECTION|{self.node_id}|{self.node_id}"
         self.send_unicast(msg, succ)
+
+        # Failsafe: reset election_in_progress after timeout
+        def reset_election():
+            time.sleep(10)
+            with self.election_lock:
+                self.election_in_progress = False
+        threading.Thread(target=reset_election, daemon=True).start()
 
     def handle_election(self, origin_id: int, candidate_id: int):
         # Chang-Roberts:
@@ -718,7 +720,7 @@ class PeerNode:
                 continue
 
             # LEADER|origin|leader_id|leader_name|leader_ip|leader_port|leader_seq
-            if mtype == "LEADER" and len(parts) >= 8:
+            if mtype == "LEADER" and len(parts) >= 7:
                 try:
                     origin_id = int(parts[1])
                     leader_id = int(parts[2])
