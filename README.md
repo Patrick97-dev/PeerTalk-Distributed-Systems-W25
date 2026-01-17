@@ -15,12 +15,12 @@ Built with Python using UDP broadcast.
 ## How to run
 
 ```bash
-python3 peertalk.py
+python3 main.py
 ```
 
 Or with arguments:
 ```bash
-python3 peertalk.py --name "Alice" --bcast "192.168.1.255"
+python3 main.py --name "Alice" --bcast "192.168.1.255"
 ```
 
 You need at least 2 peers in the same LAN to see it working. Make sure UDP port 50000 is open in your firewall.
