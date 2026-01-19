@@ -537,7 +537,7 @@ class PeerNode:
     
     def user_input_loop(self):
         safe_print("----------------------------------------")
-        safe_print("PeerTalk++ ready.")
+        safe_print("PeerTalk ready.")
         safe_print("Commands: /peers  /leader  /election  /id  /quit")
         safe_print("Send normal text to chat.")
         safe_print("----------------------------------------")
